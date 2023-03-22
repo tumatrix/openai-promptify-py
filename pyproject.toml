@@ -7,7 +7,7 @@ packages = []
 package-dir = { "" = "src" }
 
 [project]
-name = "openai-prompftify-py"
+name = "openai-promptify-py"
 version = "0.0.1"
 description = "a utility wrapepr for openai calls [NOT OFFICIAL]"
 readme = "README.md"
