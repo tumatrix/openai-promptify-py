@@ -148,6 +148,11 @@ class Utils:
         inputs = [x for x in inputs if len(x)]
         return inputs
 
+    def find_variables(self, text):
+        pattern = r'\{(\w+)\}'
+        matches = re.findall(pattern, text)
+        return matches
+
 
 _utils = Utils()
 
@@ -174,6 +179,14 @@ class OpenAIPromptify:
         proxy = InfoExtractor(model_config, verbose=verbose)
         return proxy.execute(data)
 
+    def get_variables(self, proxy_model_name):
+        assert proxy_model_name is not None and proxy_model_name != '', 'model must be specified'
+        assert proxy_model_name in self.model_repo.keys(), f'Invalid model {proxy_model_name}'
+
+        model_config = self.model_repo[proxy_model_name]
+        proxy = InfoExtractor(model_config)
+        return proxy.get_variables()
+
 
 class InfoExtractor:
 
@@ -193,6 +206,9 @@ class InfoExtractor:
         self.chunkable = model_config.get('chunkable', False)
         self.chunk_param = model_config.get('chunkable_param', 'text')
         self.max_chunks = model_config.get('max_chunks', 10)
+
+    def get_variables(self):
+        return _utils.find_variables(self.prompt)
 
     def execute(self, data: dict[str, str]) -> str:
         if self.chunkable:

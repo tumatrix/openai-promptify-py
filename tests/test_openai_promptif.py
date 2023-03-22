@@ -19,6 +19,11 @@ _models = {
         'model_name': 'gpt-3.5-turbo',
         'prompt': 'Lazy brown {animal} jumped {location}',
     },
+
+    'no_variable_model': {
+        'model_name': 'text-ada-001',
+        'prompt': 'Lazy brown fox jumped over the moon',
+    },
 }
 
 
@@ -97,6 +102,15 @@ class TestPromptify(TestCase):
         actual = self.feature.get_response('foo', {'animal': 'fox', 'location': 'over the moon'})
         self.assertEqual('This is correct statement', actual)
 
+    def test_get_variables(self):
+        actual = self.feature.get_variables(proxy_model_name='foo')
+        expected = ['animal', 'location']
+        self.assertEqual(expected, actual)
+
+    def test_get_variables_no_variable(self):
+        actual = self.feature.get_variables(proxy_model_name='no_variable_model')
+        expected = []
+        self.assertEqual(expected, actual)
 
 class TestUtils(TestCase):
     feature = Utils()
@@ -144,3 +158,5 @@ class TestUtils(TestCase):
         actual = self.feature.words(text)
         expected = ['1', 'a', 'really', 'long', 'text', '2', 'really', 'long', 'text']
         self.assertEqual(expected, actual)
+
+
