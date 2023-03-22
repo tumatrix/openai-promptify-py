@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = []
+package-dir = { "" = "src" }
+
+[project]
+name = "openai-prompftify-py"
+version = "0.0.1"
+description = "a utility wrapepr for openai calls [NOT OFFICIAL]"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+
+[project.urls]
+"Homepage" = "https://github.com/tumatrix/openai-promptify-py.git/README.md"
