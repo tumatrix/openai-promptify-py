@@ -9,9 +9,10 @@ model_prompt_limits = {
     'text-curie-001': 2048,
     'text-babbage-001': 2048,
     'text-ada-001': 2048,
+    'gpt-4': 32000,
 }
 
-chat_models = ['gpt-3.5-turbo']
+chat_models = ['gpt-3.5-turbo', 'gpt-4']
 
 models = {
     'rating_target': {
