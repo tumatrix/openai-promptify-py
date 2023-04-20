@@ -33,7 +33,7 @@ Here's an example of how to use OpenAI Promptify Py:
 
 ## Contributing
 
-If you'd like to contribute to OpenAI Promptify Py, please open an issue or pull request on our GitHub repository.
+If you'd like to contribute to OpenAI Promptify Py, please open an issue or pull request on our GitHub repository: https://github.com/tumatrix/openai-promptify-py
 
 ## License
 
