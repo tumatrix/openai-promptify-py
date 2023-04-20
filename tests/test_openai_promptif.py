@@ -1,5 +1,7 @@
 from unittest import TestCase, mock
 
+from openai import InvalidRequestError
+
 from openai_promptify import OpenAIPromptify, Utils
 
 _models = {
@@ -64,6 +66,29 @@ class TestPromptify(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(2, mock_call_openai_api.call_count)
 
+    @mock.patch('openai_promptify.InfoExtractor.call_openai_api')
+    def test_foo_chunk_retry(self, mock_call_openai_api):
+        error_triggerred_once = False
+
+        def side_effect(*args, **kwargs):
+            prompt = args[0]
+            if not prompt.startswith('bar the following text:'):
+                raise ValueError('Unexpected prompt', prompt)
+            n_sentences = len(prompt.split('\n'))
+            if n_sentences > 250:
+                raise InvalidRequestError(f'too long prompt: {n_sentences}', -10)
+            return 'This is correct statement'
+
+        mock_call_openai_api.side_effect = side_effect
+
+        text = [f'{i}: a really long text. ' for i in range(400)]
+        text = ' '.join(text)
+        text = 'there is a error_trigger in the text' + text
+        actual = self.feature.get_response('foo_chunk', {'text': text, 'key': 'bar'})
+        expected = ('This is correct statement\n' * 3).strip()
+        self.assertEqual(expected, actual)
+        self.assertEqual(4, mock_call_openai_api.call_count)  # 1 error, 2 break down, last one is ok
+
     @mock.patch('openai.ChatCompletion.create')
     def test_end_to_end_chat_model(self, mock):
 
@@ -112,6 +137,7 @@ class TestPromptify(TestCase):
         expected = []
         self.assertEqual(expected, actual)
 
+
 class TestUtils(TestCase):
     feature = Utils()
 
@@ -158,5 +184,3 @@ class TestUtils(TestCase):
         actual = self.feature.words(text)
         expected = ['1', 'a', 'really', 'long', 'text', '2', 'really', 'long', 'text']
         self.assertEqual(expected, actual)
-
-

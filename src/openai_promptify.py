@@ -134,42 +134,41 @@ class InfoExtractor:
     def get_variables(self):
         return _utils.find_variables(self.prompt)
 
-    def execute(self, data: dict[str, str]) -> str:
+    def execute(self, data: dict[str, str], chunk_size=None) -> str:
         if self.chunkable:
+            chunk_size = chunk_size or self.chunk_size
             text = data[self.chunk_param]
             inputs = _utils.sentences(text)
-            inputs = _utils.chunk(inputs, self.chunk_size)
-            print(f'Chunks: {len(inputs)}')
+            inputs = _utils.chunk(inputs, chunk_size)
+            if self.verbose:
+                print(f'Chunks: {len(inputs)}')
             inputs = inputs[:self.max_chunks]
             m_inputs = []
             for i in inputs:
                 m_data = data.copy()
                 m_data[self.chunk_param] = '\n'.join(i)
                 m_inputs.append(m_data)
-            return self.execute_inputs(m_inputs)
+            return self._execute_inputs(m_inputs, chunk_size=chunk_size)
         else:
-            return self.execute_inputs([data])
+            return self._execute_inputs([data], chunk_size=chunk_size)
 
-    def execute_inputs(self, inputs):
-        inputs = [_utils.substitute(self.prompt, x) for x in inputs]
-        responses = [self.call_openai_ex(x, self.chunk_size) for x in inputs]
+    def _execute_inputs(self, inputs, chunk_size=None):
+        substituted_inputs = [_utils.substitute(self.prompt, x) for x in inputs]
+        responses = [self.call_openai_ex(x, y, chunk_size) for x, y in zip(inputs, substituted_inputs)]
         responses = [x for x in responses if x]
         return '\n'.join(responses)
 
-    def call_openai_ex(self, text, current_chunk_size):
+    def call_openai_ex(self, input, text, current_chunk_size):
         try:
             return self.call_openai_api(f'{text}')
         except InvalidRequestError as e:
             if self.verbose:
                 print(e)
-            return self.try_splitting_further(text, current_chunk_size, )
+            return self.try_splitting_further(input, current_chunk_size, )
 
-    def try_splitting_further(self, text, current_chunk_size):
+    def try_splitting_further(self, input, current_chunk_size):
         chunk_size = current_chunk_size * .75
-        inputs = _utils.chunk(_utils.sentences(text), chunk_size=chunk_size, force_split=True)
-        if self.verbose:
-            print(f'Too long, splitting into {len(inputs)} chunks')
-        return self.execute_inputs(inputs)
+        return self.execute(input, chunk_size=chunk_size)
 
     def call_openai_api(self, prompt):
         if self.model_name in chat_models:
