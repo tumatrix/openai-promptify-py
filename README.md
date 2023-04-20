@@ -13,9 +13,7 @@ and again.
 
 You can install OpenAI Promptify Py using pip:
 
-    pip install openai-promptify-py @ git+https://github.com/tumatrix/openai-promptify-py.git
-
-_pip repository coming soon_
+    pip install openai-promptify-py
 
 ## Usage
 
