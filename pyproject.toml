@@ -8,7 +8,7 @@ package-dir = { "" = "src" }
 
 [project]
 name = "openai-promptify-py"
-version = "0.0.4"
+version = "0.0.3"
 description = "a utility wrapepr for openai calls [NOT OFFICIAL]"
 readme = "README.md"
 requires-python = ">=3.9"
