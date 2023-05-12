@@ -134,12 +134,12 @@ class InfoExtractor:
     def get_variables(self):
         return _utils.find_variables(self.prompt)
 
-    def execute(self, data: dict[str, str], chunk_size=None) -> str:
+    def execute(self, data: dict[str, str], chunk_size=None, force_split=False) -> str:
         if self.chunkable:
             chunk_size = chunk_size or self.chunk_size
             text = data[self.chunk_param]
             inputs = _utils.sentences(text)
-            inputs = _utils.chunk(inputs, chunk_size)
+            inputs = _utils.chunk(inputs, chunk_size, force_split=force_split)
             if self.verbose:
                 print(f'Chunks: {len(inputs)}')
             inputs = inputs[:self.max_chunks]
@@ -168,7 +168,7 @@ class InfoExtractor:
 
     def try_splitting_further(self, input, current_chunk_size):
         chunk_size = current_chunk_size * .75
-        return self.execute(input, chunk_size=chunk_size)
+        return self.execute(input, chunk_size=chunk_size, force_split=True)
 
     def call_openai_api(self, prompt):
         if self.model_name in chat_models:
