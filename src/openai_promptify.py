@@ -2,6 +2,9 @@ import re
 
 import openai
 from openai import InvalidRequestError
+from time import sleep
+
+from openai.error import RateLimitError
 
 model_prompt_limits = {
     'text-davinci-003': 4000,
@@ -165,6 +168,10 @@ class InfoExtractor:
             if self.verbose:
                 print(e)
             return self.try_splitting_further(input, current_chunk_size, )
+        except RateLimitError as rle:
+            print('Rate limit exceeded, waiting 60 seconds')
+            sleep(60)
+            return self.call_openai_ex(input, text, current_chunk_size)
 
     def try_splitting_further(self, input, current_chunk_size):
         chunk_size = current_chunk_size * .75
