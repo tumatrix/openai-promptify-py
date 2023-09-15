@@ -35,6 +35,16 @@ Here's an example of how to use OpenAI Promptify Py:
 
 If you'd like to contribute to OpenAI Promptify Py, please open an issue or pull request on our GitHub repository: https://github.com/tumatrix/openai-promptify-py
 
+To publish: 
+    
+    python -m pip install build twine
+
+    python -m build
+    
+    twine check dist/*
+
+    twine upload dist/*
+
 ## License
 
 OpenAI Promptify Py is licensed under the MIT License.
