@@ -13,6 +13,7 @@ model_prompt_limits = {
     'text-babbage-001': 2048,
     'text-ada-001': 2048,
     'gpt-4': 32000,
+    'gpt-3.5-turbo-16k': 16385,
 }
 
 chat_models = ['gpt-3.5-turbo', 'gpt-4']
